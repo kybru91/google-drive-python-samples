@@ -12,24 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START drive_activity_quickstart]
+# [START meet_quickstart]
 from __future__ import print_function
 
-import datetime
 import os.path
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
+from google.apps import meet_v2
+
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/activity']
+SCOPES = ['https://www.googleapis.com/auth/meetings.space.created']
 
 
 def main():
-    """Shows basic usage of the Drive Activity API.
-    Prints information about the last 10 events that occured the user's Drive.
+    """Shows basic usage of the Google Meet API.
     """
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
@@ -49,29 +48,16 @@ def main():
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
 
-    service = build('appsactivity', 'v1', credentials=creds)
-
-    # Call the Drive Activity API
-    results = service.activities().list(source='drive.google.com',
-                                        drive_ancestorId='root', pageSize=10).execute()
-    activities = results.get('activities', [])
-
-    if not activities:
-        print('No activity.')
-    else:
-        print('Recent activity:')
-        for activity in activities:
-            event = activity['combinedEvent']
-            user = event.get('user', None)
-            target = event.get('target', None)
-            if user is None or target is None:
-                continue
-            time = datetime.datetime.fromtimestamp(
-                int(event['eventTimeMillis']) / 1000)
-            print(u'{0}: {1}, {2}, {3} ({4})'.format(time, user['name'],
-                                                     event['primaryEventType'], target['name'], target['mimeType']))
+    try:
+        client = meet_v2.SpacesServiceClient(credentials=creds)
+        request = meet_v2.CreateSpaceRequest()
+        response = client.create_space(request=request)
+        print(f'Space created: {response.meeting_uri}')
+    except Exception as error:
+        # TODO(developer) - Handle errors from Meet API.
+        print(f'An error occurred: {error}')
 
 
 if __name__ == '__main__':
     main()
-# [END drive_activity_quickstart]
+# [END meet_quickstart]

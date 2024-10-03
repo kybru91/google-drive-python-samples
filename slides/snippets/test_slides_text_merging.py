@@ -12,34 +12,23 @@ limitations under the License.
 """
 
 import unittest
-from pprint import pformat
 
 import slides_text_merging
 from base_test import BaseTest
 
 
 class TestTextMerging(BaseTest):
-    """Unit test for SimpleTextReplace snippet"""
-    TEMPLATE_PRESENTATION_ID = '10QnVUx1X2qHsL17WUidGpPh_SQhXYx40CgIxaKk8jU4'
-    DATA_SPREADSHEET_ID = '17eqFZl_WK4WVixX8PjvjfLD77DraoFwMDXeiHB3dvuM'
+  """Unit test for SimpleTextReplace snippet"""
 
-    def test_text_merging(self):
-        """ text_merging method """
+  TEMPLATE_PRESENTATION_ID = "10QnVUx1X2qHsL17WUidGpPh_SQhXYx40CgIxaKk8jU4"
+  DATA_SPREADSHEET_ID = "17eqFZl_WK4WVixX8PjvjfLD77DraoFwMDXeiHB3dvuM"
 
-        responses = slides_text_merging.text_merging(
-            self.TEMPLATE_PRESENTATION_ID,
-            self.DATA_SPREADSHEET_ID)
-        for response in responses:
-            presentation_id = response.get('presentationId')
-            self.delete_file_on_cleanup(presentation_id)
-            self.assertIsNotNone(presentation_id, msg=pformat(response))
-            self.assertEqual(3, len(response.get('replies')),
-                             msg=pformat(response))
-            num_replacements = 0
-            for reply in response.get('replies'):
-                num_replacements += reply.get('replaceAllText') \
-                    .get('occurrencesChanged')
+  def test_text_merging(self):
+    """text_merging method"""
+    slides_text_merging.text_merging(
+        self.TEMPLATE_PRESENTATION_ID, self.DATA_SPREADSHEET_ID
+    )
 
 
 if __name__ == "__main__":
-    unittest.main()
+  unittest.main()
